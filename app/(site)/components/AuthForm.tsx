@@ -3,16 +3,30 @@
 import Button from "@/app/components/Button";
 import Input from "@/app/components/input/Input";
 import { data } from "autoprefixer";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import {BsGithub, BsGoogle} from 'react-icons/bs'
+import axios from "axios";
+import {toast} from "react-hot-toast";
+import { signIn, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+
 
 type Variant = 'LOGIN' | 'REGISTER';
 
 const AuthForm = () =>{
+    const session = useSession();
+    const router = useRouter();
     const [variant, setVarient] = useState<Variant>('LOGIN');
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (session?.status === 'authenticated'){
+            router.push('/users');
+
+        }
+    },[session?.status, router]);
 
 const toggleVarient = useCallback(() => {
     if(variant === 'LOGIN'){
@@ -38,17 +52,46 @@ const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
     if(variant==='REGISTER'){
-        //Axios register
+        axios.post('/api/register', data)
+        .then(() => signIn('credentials', data))
+        .catch(() => toast.error('Something went wrong !'))
+        .finally(() => setIsLoading(false))
     }
     if(variant==='LOGIN'){
-        //next-auth login
+        signIn('credentials',{
+            ...data,
+            redirect:false
+        })
+        .then((callback) => {
+            if(callback?.error){
+                toast.error('Invalid credentials');
+            }
+
+            if(callback?.ok && !callback.error){
+                toast.success('Logged In');
+                router.push('/users');
+            }
+        })
+        .finally(() => setIsLoading(false));
     }
 }
 
 const socialAction = (action: string) => {
     setIsLoading(true);
 
-    //next-auth social sign in
+    
+    signIn(action, { redirect: false })
+    .then((callback) => {
+        if(callback?.error){
+            toast.error('Invalid credentials');
+        }
+        
+        if(callback?.ok &&!callback.error){
+            toast.success('Logged In');
+            router.push('/users');
+        }
+    })
+    .finally(() => setIsLoading(false))
 }
 
     return(
@@ -98,7 +141,7 @@ const socialAction = (action: string) => {
                     </div>
                         <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
                             <div>
-                                {variant === 'LOGIN' ? 'New to MERN cgat ?' : 'Already have an account ?'}
+                                {variant === 'LOGIN' ? 'New to MERN chat ?' : 'Already have an account ?'}
                             </div>
                             <div
                                 onClick={toggleVarient}
