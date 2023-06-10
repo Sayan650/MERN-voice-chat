@@ -1,0 +1,41 @@
+'use client'
+
+import clsx from "clsx"
+import Link from "next/link"
+
+interface MobileItemProps {
+    label?: string;
+    icon: any;
+    href: string;
+    onClick?: () => void;
+    active?: boolean;
+  }
+
+  const MobileItem: React.FC<MobileItemProps> = ({ 
+    label, 
+    href, 
+    icon: Icon, 
+    active,
+    onClick
+  }) => {
+    const handleClick = () => {
+      if (onClick) {
+        return onClick();
+      }
+    };
+    console.log(label)
+    return(
+        <li onClick={handleClick} key={label}>
+        <Link
+          href={href}
+          className={clsx("group flex gap-3 text-sm leading-6 font-semibold w-full justify-center p-4 text-gray-500 hover:text-gray-950 hover:bg-gray-50")}
+        >
+           
+          <Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+          <span className="sr-only">{label}</span>
+        </Link>
+      </li>
+    )
+}
+
+export default MobileItem;
