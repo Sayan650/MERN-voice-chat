@@ -5,15 +5,12 @@ const nextConfig = {
         ["next-superjson-plugin", {}]
     ],
     images: {
-        remotePatterns: [
-          {
-            protocol: 'https',
-            hostname: 'assets.example.com',
-            port: '',
-            pathname: '/account123/**',
-          },
-        ],
-      },
+      domains: [
+        'res.cloudinary.com', 
+        'avatars.githubusercontent.com',
+        'lh3.googleusercontent.com'
+      ]
+    }
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;
