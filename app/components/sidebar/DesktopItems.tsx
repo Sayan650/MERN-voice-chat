@@ -40,7 +40,7 @@ interface DesktopItemProps {
               font-semibold 
               text-gray-500 
               hover:text-black 
-              hover:bg-gray-300
+              hover:bg-blue-500
               
             `,
               active && 'bg-gray-100 text-black'
